@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KSNVVV | Машиналық оқыту</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    transition: 0.3s;
+}
+.dark { background: #0f172a; color: white; }
+.light { background: #f4f4f4; color: black; }
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 15px;
+    position: sticky;
+    top: 0;
+    background: rgba(0,0,0,0.6);
+}
+nav a { color: white; text-decoration: none; }
+
+section {
+    min-height: 100vh;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    background: rgba(255,255,255,0.1);
+    padding: 25px;
+    border-radius: 15px;
+    max-width: 800px;
+    backdrop-filter: blur(10px);
+}
+
+button {
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.fade { opacity:0; transform:translateY(20px); transition:1s; }
+.fade.show { opacity:1; transform:translateY(0); }
+
+iframe { width:100%; height:300px; border-radius:10px; }
+
+@media(max-width:600px){
+    section { padding:20px; }
+}
+</style>
+</head>
+
+<body class="dark">
+
+<nav>
+<a href="#about">Анықтама</a>
+<a href="#types">Түрлері</a>
+<a href="#video">Видео</a>
+<a href="#quiz">Тест</a>
+<a href="#contact">Байланыс</a>
+<button onclick="toggleTheme()">🌙/☀️</button>
+</nav>
+
+<section id="about">
+<div class="card fade">
+<h1>KSNVVV | Машиналық оқыту</h1>
+<p>Машиналық оқыту — жасанды интеллекттің маңызды бөлігі.</p>
+<p>Компьютерлер деректер арқылы үйреніп, болашақта шешім қабылдай алады.</p>
+</div>
+</section>
+
+<section id="types">
+<div class="card fade">
+<h2>Түрлері</h2>
+<ul>
+<li>Бақыланатын оқыту</li>
+<li>Бақыланбайтын оқыту</li>
+<li>Күшейтілген оқыту</li>
+</ul>
+</div>
+</section>
+
+<section id="video">
+<div class="card fade">
+<h2>Видео</h2>
+<iframe src="https://www.youtube.com/embed/aircAruvnKk"></iframe>
+</div>
+</section>
+
+<section id="quiz">
+<div class="card fade">
+<h2>Тест</h2>
+
+<p id="q"></p>
+<div id="answers"></div>
+<p id="score"></p>
+
+<button onclick="nextQ()">Келесі</button>
+</div>
+</section>
+
+<section id="contact">
+<div class="card fade">
+<h2>Байланыс</h2>
+<input placeholder="Атың">
+<input placeholder="Email">
+<textarea placeholder="Хабарлама"></textarea>
+<button onclick="alert('Жіберілді!')">Жіберу</button>
+</div>
+</section>
+
+<script>
+const els = document.querySelectorAll('.fade');
+window.addEventListener('scroll',()=>{
+els.forEach(el=>{
+if(el.getBoundingClientRect().top < window.innerHeight-50){
+el.classList.add('show');
+}
+});
+});
+
+function toggleTheme(){
+document.body.classList.toggle('light');
+document.body.classList.toggle('dark');
+}
+
+const questions = [
+{q:"Машиналық оқыту не?",a:["Деректер арқылы үйрену","Ойын"],c:0},
+{q:"Бұл не бөлігі?",a:["ЖИ","Графика"],c:0},
+{q:"Қайсысы түрі?",a:["Бақыланатын","Paint"],c:0}
+];
+
+let i=0, score=0;
+
+function showQ(){
+document.getElementById("q").innerText = questions[i].q;
+let ans="";
+questions[i].a.forEach((x,index)=>{
+ans+=`<button onclick="check(${index})">${x}</button>`;
+});
+document.getElementById("answers").innerHTML = ans;
+document.getElementById("score").innerText = "Ұпай: "+score;
+}
+
+function check(index){
+if(index===questions[i].c){ score++; }
+}
+
+function nextQ(){
+i++;
+if(i<questions.length){ showQ(); }
+else{
+document.getElementById("q").innerText="Тест бітті!";
+document.getElementById("answers").innerHTML="";
+document.getElementById("score").innerText="Қорытынды ұпай: "+score;
+}
+}
+
+showQ();
+</script>
+
+</body>
+</html>
