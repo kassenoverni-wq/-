@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--HEAD-->
+<title>Özen Collectio 01</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Özen — казахстанский бренд одежды. Collectio 01: худи Kerege, карго Dala, футболка Tolqyn.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: витрина магазина как технический лист — миллиметровая сетка, выноски и моно-подписи вокруг крупных фото */
+:root{
+  --bg:#F5F3ED; --surface:#EAE6DB; --ink:#1A1A1A; --muted:#5E5F5E; --line:#D3CCBC;
+  --sand:#D1C5B4; --graphite:#3A3D40; --accent:#9E472A; --on-accent:#FFF8F2;
+  --night:#1A1A1A; --night-2:#26282A; --on-night:#F5F3ED; --on-night-muted:#A9A69D; --night-line:#3A3D40;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Golos Text","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --gut-l:max(16px,env(safe-area-inset-left,0px)); --gut-r:max(16px,env(safe-area-inset-right,0px));
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#161718; --surface:#212325; --ink:#F5F3ED; --muted:#A9A69D; --line:#35383A;
+  --accent:#CF7350; --on-accent:#1A1A1A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#161718; --surface:#212325; --ink:#F5F3ED; --muted:#A9A69D; --line:#35383A;
+  --accent:#CF7350; --on-accent:#1A1A1A; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--night)}
+img{display:block;max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.08}
+.wrap{max-width:1240px;margin-inline:auto;padding-left:var(--gut-l);padding-right:var(--gut-r)}
+.mono{font:500 11px/1.4 var(--mono);letter-spacing:.09em;text-transform:uppercase}
+
+/* announce + header */
+.announce{background:var(--accent);color:var(--on-accent)}
+.announce .wrap{padding-block:8px;text-align:center}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--night);color:var(--on-night);border-bottom:1px solid var(--night-line)}
+.top .wrap{display:flex;align-items:center;gap:8px 24px;flex-wrap:wrap;padding-block:12px}
+.logo{font:800 22px/1 var(--display);letter-spacing:.06em;text-decoration:none;margin-right:auto}
+.nav{display:flex;gap:22px;font-size:14px}
+.nav a{text-decoration:none;padding-block:4px;border-bottom:1px solid transparent}
+.nav a:hover{border-color:var(--sand)}
+.tools{display:flex;align-items:center;gap:10px}
+.lang{display:flex;border:1px solid var(--night-line)}
+.lang button{background:none;border:0;padding:6px 9px;color:var(--on-night-muted)}
+.lang button[aria-pressed="true"]{background:var(--on-night);color:var(--night)}
+.cartbtn{background:none;border:1px solid var(--on-night);padding:6px 12px;display:flex;gap:8px;align-items:center}
+.cartbtn b{background:var(--accent);color:var(--on-accent);min-width:20px;padding:0 5px;text-align:center;font-family:var(--mono)}
+@media (max-width:760px){.nav{order:3;width:100%;overflow-x:auto;gap:18px;padding-bottom:2px}.nav a{white-space:nowrap}}
+
+/* hero */
+.hero{background:var(--night);color:var(--on-night);
+  background-image:linear-gradient(var(--night-2) 1px,transparent 1px),linear-gradient(90deg,var(--night-2) 1px,transparent 1px);background-size:28px 28px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding-block:44px}
+.hero-copy{min-width:0;display:flex;flex-direction:column;gap:22px;align-items:flex-start}
+.hero h1{font-weight:800;font-size:clamp(34px,5.6vw,72px);letter-spacing:-.01em;text-transform:uppercase}
+.hero h1 em{font-style:normal;color:var(--sand)}
+.hero p{margin:0;max-width:52ch;color:var(--on-night-muted);font-size:17px}
+.eyebrow{color:var(--sand)}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:13px 22px;text-decoration:none;font:500 12px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:none;color:var(--ink)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.hero .btn{border-color:var(--on-night);background:var(--on-night);color:var(--night)}
+.hero .btn.ghost{background:none;color:var(--on-night)}
+.wave{width:min(340px,100%);height:26px;color:var(--accent)}
+.hero-fig{position:relative;margin:0;justify-self:end;width:100%;max-width:470px;aspect-ratio:3/4;border:1px solid var(--night-line)}
+.hero-fig img{width:100%;height:100%;object-fit:cover}
+.call{position:absolute;background:var(--night);color:var(--on-night);border:1px solid var(--sand);padding:4px 8px;font-size:10px;display:flex;gap:6px;align-items:center}
+.call::before{content:"";width:6px;height:6px;background:var(--accent);border-radius:50%}
+.ruler{position:absolute;left:-1px;right:-1px;bottom:-22px;height:14px;border-left:1px solid var(--sand);border-right:1px solid var(--sand);
+  background:linear-gradient(var(--sand),var(--sand)) center/100% 1px no-repeat;color:var(--sand)}
+.ruler span{position:absolute;left:50%;top:-4px;transform:translateX(-50%);background:var(--night);padding:0 8px}
+@media (max-width:820px){.hero .wrap{grid-template-columns:1fr;padding-block:32px 48px}.hero-fig{justify-self:start;max-width:420px}}
+
+/* sections */
+section{padding-block:64px}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px 32px;flex-wrap:wrap;margin-bottom:28px}
+.head h2{font-weight:600;font-size:clamp(24px,3.2vw,38px);text-transform:uppercase}
+.head .mono{color:var(--muted);display:block;margin-bottom:10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips button{background:none;border:1px solid var(--line);padding:8px 14px}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* catalog */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px 20px}
+@media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.grid{gap:24px 12px}}
+.card{min-width:0;display:flex;flex-direction:column;gap:12px;text-align:left;background:none;border:0;padding:0}
+.ph{position:relative;aspect-ratio:1;background:var(--surface);overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover;transition:opacity .35s,transform .6s}
+.ph img.alt{position:absolute;inset:0;opacity:0}
+.card:hover .ph img.alt{opacity:1}
+.card:hover .ph img:only-of-type{transform:scale(1.04)}
+.tag{position:absolute;top:10px;left:10px;background:var(--night);color:var(--on-night);padding:4px 8px;font-size:10px}
+.tag.soon{background:var(--accent);color:var(--on-accent)}
+.card h3{font:600 16px/1.3 var(--body)}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:14px}
+.price{font:500 14px var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.blueprint{width:100%;height:100%;display:grid;place-items:center;background:var(--night);color:var(--sand);
+  background-image:linear-gradient(60deg,transparent 48.5%,var(--night-line) 49%,var(--night-line) 51%,transparent 51.5%),linear-gradient(-60deg,transparent 48.5%,var(--night-line) 49%,var(--night-line) 51%,transparent 51.5%);background-size:34px 58px}
+.blueprint span{font:800 clamp(56px,9vw,96px)/1 var(--display);background:var(--night);padding:8px 22px;border:1px solid var(--sand)}
+
+/* construction */
+.build{background:var(--surface)}
+.build-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:36px;align-items:start}
+@media (max-width:900px){.build-grid{grid-template-columns:1fr}}
+.sheet{min-width:0;border:1px solid var(--line);background:var(--bg);overflow-x:auto}
+.sheet img{min-width:640px;width:100%}
+.spec{min-width:0;display:flex;flex-direction:column;gap:22px}
+.spec dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:10px 18px;font-size:15px}
+.spec dt{color:var(--muted);padding-top:3px}
+.spec dd{margin:0}
+.swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sw{min-width:0;display:flex;flex-direction:column;gap:6px;font-size:9px;color:var(--muted);letter-spacing:.04em}
+.sw i{display:block;aspect-ratio:1;border:1px solid var(--line)}
+
+/* lookbook */
+.look{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.look figure{margin:0;min-width:0;position:relative;overflow:hidden;background:var(--surface)}
+.look img{width:100%;height:100%;object-fit:cover}
+.look figcaption{position:absolute;left:10px;bottom:10px;background:var(--night);color:var(--on-night);padding:4px 8px;font-size:10px}
+@media (max-width:760px){.look{grid-template-columns:1fr}}
+
+/* about */
+.about{background:var(--night);color:var(--on-night)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+@media (max-width:820px){.about-grid{grid-template-columns:1fr}}
+.about h2{font-weight:600;font-size:clamp(24px,3.2vw,38px);text-transform:uppercase;margin-top:10px}
+.about .lead{font-size:18px;color:var(--on-night-muted);max-width:56ch;margin:20px 0 0}
+.prin{display:flex;flex-direction:column;border-top:1px solid var(--night-line)}
+.prin div{padding-block:18px;border-bottom:1px solid var(--night-line);display:grid;grid-template-columns:44px 1fr;gap:4px 12px}
+.prin b{font:800 22px/1.2 var(--display);color:var(--sand);grid-row:span 2}
+.prin h3{font:600 17px/1.3 var(--body)}
+.prin p{margin:0;color:var(--on-night-muted);font-size:15px}
+
+footer{border-top:1px solid var(--line)}
+footer .wrap{padding-block:28px;display:flex;justify-content:space-between;gap:12px 32px;flex-wrap:wrap;color:var(--muted);font-size:14px}
+footer .logo{color:var(--ink);font-size:18px}
+
+/* dialogs */
+dialog{border:0;padding:0;background:var(--bg);color:var(--ink);max-width:none;max-height:none}
+dialog::backdrop{background:rgba(10,10,10,.6)}
+.x{position:absolute;top:10px;right:10px;z-index:2;width:38px;height:38px;border:1px solid var(--line);background:var(--bg);font-size:18px;line-height:1}
+#pv{width:min(960px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
+.pv{display:grid;grid-template-columns:1fr 1fr}
+@media (max-width:720px){.pv{grid-template-columns:1fr}}
+.pv-media{min-width:0;background:var(--surface)}
+.pv-media .main{aspect-ratio:1;width:100%;object-fit:cover}
+.thumbs{display:flex;gap:6px;padding:6px}
+.thumbs button{padding:0;border:1px solid transparent;background:none;width:64px}
+.thumbs button[aria-pressed="true"]{border-color:var(--ink)}
+.pv-info{min-width:0;padding:44px 28px 28px;display:flex;flex-direction:column;gap:16px}
+.pv-info h2{font-weight:600;font-size:24px;text-transform:uppercase}
+.pv-info p{margin:0;color:var(--muted)}
+.pv-info ul{margin:0;padding:0;list-style:none;border-top:1px solid var(--line);font-size:14px}
+.pv-info li{padding-block:8px;border-bottom:1px solid var(--line)}
+.sizes{display:flex;gap:8px;flex-wrap:wrap}
+.sizes button{min-width:48px;padding:10px;border:1px solid var(--line);background:none;font-family:var(--mono)}
+.sizes button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.note{font-size:13px;color:var(--muted)}
+#cart{margin:0 0 0 auto;height:100dvh;width:min(420px,100vw)}
+.drawer{height:100%;display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top,0px)) 20px calc(20px + env(safe-area-inset-bottom,0px))}
+.drawer h2{font-weight:600;font-size:20px;text-transform:uppercase;margin-bottom:16px}
+.items{flex:1;overflow:auto;display:flex;flex-direction:column}
+.item{display:grid;grid-template-columns:72px 1fr auto;gap:12px;padding-block:12px;border-bottom:1px solid var(--line);align-items:start}
+.item img,.item .mini{width:72px;height:72px;object-fit:cover}
+.item .t{min-width:0;font-size:14px}
+.item .t small{display:block;color:var(--muted)}
+.qty{display:inline-flex;align-items:center;gap:10px;margin-top:6px;border:1px solid var(--line)}
+.qty button{border:0;background:none;width:28px;height:28px}
+.sum{display:flex;justify-content:space-between;padding-block:16px;font-weight:600}
+.empty{color:var(--muted);padding-block:24px}
+.ship{font-size:13px;color:var(--muted);margin:0 0 12px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;z-index:20;font-size:14px;max-width:calc(100vw - 32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+<!--/HEAD-->
+</head>
+<body>
+<!--BODY-->
+<div class="announce"><div class="wrap mono" data-t="announce"></div></div>
+
+<header class="top"><div class="wrap">
+  <a class="logo" href="#top" aria-label="Özen">ÖZEN</a>
+  <nav class="nav" aria-label="Разделы">
+    <a href="#catalog" data-t="navCatalog"></a>
+    <a href="#build" data-t="navBuild"></a>
+    <a href="#lookbook">Lookbook</a>
+    <a href="#about" data-t="navAbout"></a>
+  </nav>
+  <div class="tools">
+    <div class="lang mono" role="group" aria-label="Язык / Тіл">
+      <button type="button" data-lang="ru">RU</button><button type="button" data-lang="kk">KZ</button>
+    </div>
+    <button type="button" class="cartbtn mono" id="openCart"><span data-t="cart"></span><b id="count">0</b></button>
+  </div>
+</div></header>
+
+<main id="top">
+<div class="hero"><div class="wrap">
+  <div class="hero-copy">
+    <span class="mono eyebrow" data-t="heroEyebrow"></span>
+    <h1 data-t="heroTitle" data-html></h1>
+    <svg class="wave" viewBox="0 0 340 26" fill="none" aria-hidden="true"><path d="M0 13c28-16 57-16 85 0s57 16 85 0 57-16 85 0 57 16 85 0" stroke="currentColor" stroke-width="2"/></svg>
+    <p data-t="heroLede"></p>
+    <div class="cta">
+      <a class="btn" href="#catalog" data-t="heroCta"></a>
+      <a class="btn ghost" href="#about" data-t="heroCta2"></a>
+    </div>
+  </div>
+  <figure class="hero-fig">
+    <img src="assets/hero.jpg" alt="Модель в худи Kerege и карго Dala на фоне бетонной архитектуры" width="1100" height="1474">
+    <span class="call mono" style="top:9%;right:6%">Double-layer hood</span>
+    <span class="call mono" style="top:40%;left:5%">480 gsm fleece</span>
+    <span class="call mono" style="top:63%;right:5%">Angled cargo pocket</span>
+    <div class="ruler mono"><span>Oversized fit</span></div>
+  </figure>
+</div></div>
+
+<section id="catalog"><div class="wrap">
+  <div class="head">
+    <div><span class="mono">Collectio 01</span><h2 data-t="catTitle"></h2></div>
+    <div class="chips mono" id="chips" role="group"></div>
+  </div>
+  <div class="grid" id="grid"></div>
+</div></section>
+
+<section class="build" id="build"><div class="wrap">
+  <div class="head"><div><span class="mono" data-t="buildEyebrow"></span><h2 data-t="buildTitle"></h2></div></div>
+  <div class="build-grid">
+    <div class="sheet"><img src="assets/techsheet.jpg" alt="Технический лист Collectio 01: худи Kerege и карго Dala, вид спереди, сзади и сбоку" width="1408" height="768" loading="lazy"></div>
+    <div class="spec">
+      <dl id="spec"></dl>
+      <div>
+        <div class="mono" style="color:var(--muted);margin-bottom:10px" data-t="palette"></div>
+        <div class="swatches mono">
+          <div class="sw"><i style="background:#1A1A1A"></i>Charcoal Black</div>
+          <div class="sw"><i style="background:#3A3D40"></i>Faded Graphite</div>
+          <div class="sw"><i style="background:#F5F3ED"></i>Milky</div>
+          <div class="sw"><i style="background:#D1C5B4"></i>Steppe Sand</div>
+          <div class="sw"><i style="background:#9E472A"></i>Terracotta</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section id="lookbook"><div class="wrap">
+  <div class="head"><div><span class="mono" data-t="lookEyebrow"></span><h2>Lookbook</h2></div></div>
+  <div class="look">
+    <figure><img src="assets/street.jpg" alt="Двое идут по улице Алматы в вещах Özen" width="1600" height="893" loading="lazy"><figcaption class="mono">Kerege · Dala Graphite · Shapan</figcaption></figure>
+    <figure><img src="assets/hoodie-model.jpg" alt="Худи Kerege на модели, студийная съёмка" width="900" height="900" loading="lazy"><figcaption class="mono">Kerege · Faded Graphite</figcaption></figure>
+  </div>
+</div></section>
+
+<section class="about" id="about"><div class="wrap about-grid">
+  <div>
+    <span class="mono eyebrow" data-t="aboutEyebrow"></span>
+    <h2 data-t="aboutTitle"></h2>
+    <p class="lead" data-t="aboutLead"></p>
+  </div>
+  <div class="prin" id="prin"></div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <span class="logo">ÖZEN</span>
+  <span data-t="footNote"></span>
+  <span class="mono">Kazakh heritage · Made in KZ</span>
+</div></footer>
+
+<dialog id="pv" aria-labelledby="pvName"><button type="button" class="x" data-close aria-label="Закрыть">×</button><div class="pv" id="pvBody"></div></dialog>
+<dialog id="cart" aria-labelledby="cartTitle"><div class="drawer">
+  <button type="button" class="x" data-close aria-label="Закрыть">×</button>
+  <h2 id="cartTitle" data-t="cart"></h2>
+  <div class="items" id="items"></div>
+  <div class="sum"><span data-t="total"></span><span class="price" id="sum"></span></div>
+  <p class="ship" id="ship"></p>
+  <button type="button" class="btn" id="checkout" data-t="checkout"></button>
+  <p class="note" id="checkoutNote" hidden data-t="checkoutNote"></p>
+</div></dialog>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const T={
+ru:{announce:"Collectio 01 уже в продаже · Бесплатная доставка по Казахстану от 50 000 ₸",
+ navCatalog:"Каталог",navBuild:"Конструкция",navAbout:"О бренде",cart:"Корзина",
+ heroEyebrow:"Collectio 01 · Осень–зима 2026",heroTitle:"Тихая сила <em>степи</em>",
+ heroLede:"Өзен по-казахски — река. Плотный хлопок 480 г/м², швы по линиям кереге и монограмма Ө высотой 1,5 см. Громких логотипов нет.",
+ heroCta:"Смотреть коллекцию",heroCta2:"О бренде",catTitle:"Каталог",
+ buildEyebrow:"Технический лист",buildTitle:"Как это сшито",palette:"Палитра коллекции",
+ lookEyebrow:"Алматы, осень",aboutEyebrow:"О бренде",aboutTitle:"Наследие в крое, а не в принтах",
+ aboutLead:"Özen — повседневная одежда из Казахстана. Мы берём формы кочевого мира — решётку кереге, флягу торсык, линию реки в степи — и превращаем их в швы и силуэты. Орнамент остаётся внутри конструкции.",
+ footNote:"© 2026 Özen. Алматы, Казахстан",total:"Итого",checkout:"Оформить заказ",
+ checkoutNote:"Это демо-витрина: онлайн-оплата ещё не подключена, заказ не отправлен.",
+ empty:"В корзине пока пусто.",add:"В корзину",size:"Размер",pickSize:"Выберите размер",added:"Добавлено в корзину",
+ soon:"Скоро",soonBtn:"Drop 02 — скоро в продаже",isNew:"New",remove:"Убрать",
+ shipFree:"Доставка бесплатная.",shipLeft:n=>`До бесплатной доставки осталось ${n}.`,
+ cats:{all:"Все",hoodie:"Худи",tee:"Футболки",pants:"Брюки",outer:"Куртки",acc:"Аксессуары"},
+ spec:[["Ткань","100% гребенной хлопок, плотный флис 480 г/м²"],["Капюшон","Двухслойный, без шнурков"],["Крой","Оверсайз, спущенное плечо, реглан"],["Швы","Архитектурные линии «кереге», нить в тон"],["Брендинг","Вышивка Ө 1,5 см, тканая хлопковая этикетка"],["Акцент","Стропа из нейлона Cordura"]],
+ prin:[["Конструкция вместо декора","Изогнутые швы худи повторяют решётку юрты. Узор не напечатан, а сшит."],["Вес, который чувствуется","Флис 480 г/м² держит форму и не теряет её после стирок."],["Цвета степи","Уголь, графит, молоко, песок. Терракота появляется только в деталях и на подкладке."]]},
+kk:{announce:"Collectio 01 сатылымда · 50 000 ₸-ден бастап Қазақстан бойынша тегін жеткізу",
+ navCatalog:"Каталог",navBuild:"Құрылым",navAbout:"Бренд туралы",cart:"Себет",
+ heroEyebrow:"Collectio 01 · Күз–қыс 2026",heroTitle:"Даланың тыныш <em>күші</em>",
+ heroLede:"Өзен — ағын су. Тығыздығы 480 г/м² мақта, кереге сызығымен жүргізілген тігістер және биіктігі 1,5 см Ө монограммасы. Айқайлаған логотип жоқ.",
+ heroCta:"Топтаманы көру",heroCta2:"Бренд туралы",catTitle:"Каталог",
+ buildEyebrow:"Техникалық парақ",buildTitle:"Қалай тігілген",palette:"Топтама түстері",
+ lookEyebrow:"Алматы, күз",aboutEyebrow:"Бренд туралы",aboutTitle:"Мұра — принтте емес, пішімде",
+ aboutLead:"Özen — Қазақстанда жасалған күнделікті киім. Көшпенділер әлемінің пішіндерін — керегені, торсықты, даладағы өзен сызығын — тігіс пен силуэтке айналдырамыз. Ою-өрнек құрылымның ішінде қалады.",
+ footNote:"© 2026 Özen. Алматы, Қазақстан",total:"Барлығы",checkout:"Тапсырыс беру",
+ checkoutNote:"Бұл — демо-дүкен: онлайн төлем әлі қосылмаған, тапсырыс жіберілген жоқ.",
+ empty:"Себет әзірге бос.",add:"Себетке қосу",size:"Өлшем",pickSize:"Өлшемді таңдаңыз",added:"Себетке қосылды",
+ soon:"Жақында",soonBtn:"Drop 02 — жақында сатылымда",isNew:"New",remove:"Алып тастау",
+ shipFree:"Жеткізу тегін.",shipLeft:n=>`Тегін жеткізуге дейін ${n} қалды.`,
+ cats:{all:"Барлығы",hoodie:"Худи",tee:"Футболкалар",pants:"Шалбарлар",outer:"Күртелер",acc:"Аксессуарлар"},
+ spec:[["Мата","100% таралған мақта, тығыз флис 480 г/м²"],["Капюшон","Қос қабат, баусыз"],["Пішім","Оверсайз, түсірілген иық, реглан"],["Тігістер","«Кереге» сәулеттік сызықтары, түстес жіп"],["Брендинг","1,5 см Ө кестесі, тоқыма мақта жапсырма"],["Акцент","Cordura нейлон таспасы"]],
+ prin:[["Әшекей емес, құрылым","Худидің иілген тігістері киіз үйдің керегесін қайталайды. Өрнек басылмаған, тігілген."],["Сезілетін салмақ","480 г/м² флис пішінін сақтайды, жуғаннан кейін де өзгермейді."],["Дала түстері","Көмір, графит, сүт, құм. Терракота тек бөлшектер мен астарда кездеседі."]]}
+};
+const SZ=["S","M","L","XL"], FREE=50000;
+const P=[
+ {id:"kerege",cat:"hoodie",price:34900,color:"Faded Graphite",isNew:1,img:["hoodie-front","hoodie-back","hoodie-model"],
+  ru:{n:"Худи «Kerege»",d:"Оверсайз-худи из плотного флиса. Двухслойный капюшон без шнурков, реглан и изогнутые швы, которые повторяют решётку юрты — кереге.",s:["100% гребенной хлопок, флис 480 г/м²","Тональная вышивка Ө, 1,5 см","Карманы в боковых швах"]},
+  kk:{n:"«Kerege» худиі",d:"Тығыз флистен тігілген оверсайз худи. Баусыз қос қабат капюшон, реглан жең және киіз үйдің керегесін қайталайтын иілген тігістер.",s:["100% таралған мақта, флис 480 г/м²","Түстес Ө кестесі, 1,5 см","Бүйір тігістегі қалталар"]}},
+ {id:"tolqyn",cat:"tee",price:16900,color:"Faded Graphite",isNew:1,img:["tee"],
+  ru:{n:"Футболка «Tolqyn»",d:"Плотная футболка свободного кроя. Через грудь идёт шов-волна — линия реки, которая дала бренду имя. Tolqyn значит «волна».",s:["100% хлопок, плотное джерси","Рельефный шов-волна","Варёная окраска"]},
+  kk:{n:"«Tolqyn» футболкасы",d:"Кең пішімді тығыз футболка. Кеудесінен толқын тәрізді тігіс өтеді — брендке атау берген өзеннің сызығы.",s:["100% мақта, тығыз джерси","Бедерлі толқын тігіс","Жуылған бояу"]}},
+ {id:"dala-sand",cat:"pants",price:39900,color:"Steppe Sand",img:["dala-sand"],
+  ru:{n:"Карго «Dala»",d:"Широкие карго цвета степного песка. Косые накладные карманы, скрытые задние карманы и регулируемые манжеты по низу.",s:["Свободная посадка","Усиленные швы","Стропа-ремень в комплекте"]},
+  kk:{n:"«Dala» карго шалбары",d:"Дала құмы түстес кең карго. Қиғаш жапсырма қалталар, жасырын артқы қалталар және балағы реттелетін манжеттер.",s:["Еркін отырыс","Күшейтілген тігістер","Таспа белбеу жинақта"]}},
+ {id:"dala-graphite",cat:"pants",price:42900,color:"Graphite",img:["dala-graphite"],
+  ru:{n:"Карго «Dala Tech»",d:"Техничная версия Dala: ремень со стропой, карман на молнии, петли для снаряжения и анатомические швы на коленях.",s:["Объёмные колени","Утяжки по низу","Петли и D-кольцо"]},
+  kk:{n:"«Dala Tech» карго шалбары",d:"Dala-ның техникалық нұсқасы: таспа белбеу, сыдырмалы қалта, жабдыққа арналған ілмектер және тізедегі анатомиялық тігістер.",s:["Көлемді тізе","Балақтағы тартқыштар","Ілмектер мен D-сақина"]}},
+ {id:"shapan",cat:"outer",price:54900,color:"Washed Black / Terracotta",soon:1,img:["shapan"],
+  ru:{n:"Куртка «Shapan»",d:"Оверсайз-куртка из варёного денима. Терракотовая подкладка — единственный яркий цвет коллекции, и он спрятан внутри.",s:["Варёный деним","Подкладка Terracotta","Застёжка на кнопках"]},
+  kk:{n:"«Shapan» күртесі",d:"Жуылған денимнен тігілген оверсайз күрте. Терракота астар — топтаманың жалғыз ашық түсі, ол ішінде жасырылған.",s:["Жуылған деним","Terracotta астар","Түймелі ілгек"]}},
+ {id:"torsyq",cat:"acc",price:19900,color:"Charcoal Black",soon:1,img:[],
+  ru:{n:"Сумка «Torsyq»",d:"Кроссбоди из нейлона Cordura. Форма отсылает к торсыку — кожаной фляге кочевников.",s:["Нейлон Cordura","Регулируемая стропа","Быстрая пряжка"]},
+  kk:{n:"«Torsyq» сөмкесі",d:"Cordura нейлонынан жасалған кроссбоди. Пішіні торсыққа — көшпенділердің былғары ыдысына — ұқсайды.",s:["Cordura нейлоны","Реттелетін таспа","Жылдам ілгек"]}}
+];
+const $=s=>document.querySelector(s), src=n=>`assets/${n}.jpg`, kzt=n=>n.toLocaleString("ru-RU")+" ₸";
+let lang="ru", cat="all", cart=[];
+try{lang=localStorage.getItem("ozen-lang")||"ru"; cart=JSON.parse(localStorage.getItem("ozen-cart")||"[]")}catch(e){}
+if(!T[lang])lang="ru";
+const save=()=>{try{localStorage.setItem("ozen-lang",lang);localStorage.setItem("ozen-cart",JSON.stringify(cart))}catch(e){}};
+const t=()=>T[lang], media=(p,cls="")=>p.img.length?`<img class="${cls}" src="${src(p.img[0])}" alt="${p[lang].n}" loading="lazy">`:`<div class="blueprint ${cls}"><span>Ө</span></div>`;
+
+function applyText(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-t]").forEach(e=>{const v=t()[e.dataset.t]; if("html" in e.dataset)e.innerHTML=v; else e.textContent=v});
+  document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
+  $("#spec").innerHTML=t().spec.map(([a,b])=>`<dt class="mono">${a}</dt><dd>${b}</dd>`).join("");
+  $("#prin").innerHTML=t().prin.map(([a,b],i)=>`<div><b>${"ӨZN"[i]}</b><h3>${a}</h3><p>${b}</p></div>`).join("");
+  $("#chips").innerHTML=Object.entries(t().cats).map(([k,v])=>`<button type="button" data-cat="${k}" aria-pressed="${k===cat}">${v}</button>`).join("");
+  renderGrid(); renderCart();
+}
+function renderGrid(){
+  $("#grid").innerHTML=P.filter(p=>cat==="all"||p.cat===cat).map(p=>`<button type="button" class="card" data-id="${p.id}">
+   <div class="ph">${media(p)}${p.img[1]?`<img class="alt" src="${src(p.img[1])}" alt="" loading="lazy">`:""}
+   ${p.soon?`<span class="tag soon mono">${t().soon}</span>`:p.isNew?`<span class="tag mono">${t().isNew}</span>`:""}</div>
+   <h3>${p[lang].n}</h3><div class="meta"><span>${p.color}</span><span class="price">${kzt(p.price)}</span></div></button>`).join("");
+}
+let cur=null, size=null, shot=0;
+function renderPv(){
+  const p=cur, L=p[lang];
+  $("#pvBody").innerHTML=`<div class="pv-media">${p.img.length?`<img class="main" src="${src(p.img[shot])}" alt="${L.n}">`:`<div class="main blueprint"><span>Ө</span></div>`}
+   ${p.img.length>1?`<div class="thumbs">${p.img.map((n,i)=>`<button type="button" data-shot="${i}" aria-pressed="${i===shot}"><img src="${src(n)}" alt=""></button>`).join("")}</div>`:""}</div>
+   <div class="pv-info"><span class="mono" style="color:var(--muted)">Collectio 01 · ${p.color}</span><h2 id="pvName">${L.n}</h2>
+   <span class="price" style="font-size:18px">${kzt(p.price)}</span><p>${L.d}</p><ul>${L.s.map(x=>`<li>${x}</li>`).join("")}</ul>
+   ${p.soon?`<button type="button" class="btn" disabled>${t().soonBtn}</button>`:
+   `<div><div class="mono" style="color:var(--muted);margin-bottom:8px">${t().size}</div><div class="sizes">${SZ.map(s=>`<button type="button" data-size="${s}" aria-pressed="${s===size}">${s}</button>`).join("")}</div></div>
+   <button type="button" class="btn" id="addBtn">${size?t().add:t().pickSize}</button>`}</div>`;
+}
+function renderCart(){
+  const n=cart.reduce((a,i)=>a+i.q,0), sum=cart.reduce((a,i)=>a+i.q*P.find(p=>p.id===i.id).price,0);
+  $("#count").textContent=n; $("#sum").textContent=kzt(sum);
+  $("#items").innerHTML=cart.length?cart.map((i,k)=>{const p=P.find(p=>p.id===i.id);return `<div class="item">${media(p,"mini")}
+   <div class="t">${p[lang].n}<small>${p.color} · ${i.s}</small><span class="qty"><button type="button" data-q="-1" data-k="${k}" aria-label="−">−</button><span>${i.q}</span><button type="button" data-q="1" data-k="${k}" aria-label="+">+</button></span></div>
+   <span class="price">${kzt(p.price*i.q)}</span></div>`}).join(""):`<p class="empty">${t().empty}</p>`;
+  $("#ship").textContent=!cart.length?"":sum>=FREE?t().shipFree:t().shipLeft(kzt(FREE-sum));
+  $("#checkout").disabled=!cart.length; if(!cart.length)$("#checkoutNote").hidden=true;
+}
+let toastT; function toast(m){const e=$("#toast");e.textContent=m;e.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>e.hidden=true,2200)}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b){ if(e.target.tagName==="DIALOG")e.target.close(); return }
+  if(b.dataset.lang){lang=b.dataset.lang;save();applyText();if(cur&&$("#pv").open)renderPv()}
+  else if(b.dataset.cat){cat=b.dataset.cat;applyText()}
+  else if(b.classList.contains("card")){cur=P.find(p=>p.id===b.dataset.id);size=null;shot=0;renderPv();$("#pv").showModal()}
+  else if(b.dataset.shot){shot=+b.dataset.shot;renderPv()}
+  else if(b.dataset.size){size=b.dataset.size;renderPv()}
+  else if(b.id==="addBtn"){ if(!size)return toast(t().pickSize);
+    const it=cart.find(i=>i.id===cur.id&&i.s===size); it?it.q++:cart.push({id:cur.id,s:size,q:1});
+    save();renderCart();$("#pv").close();toast(t().added)}
+  else if(b.dataset.q){const i=cart[+b.dataset.k];i.q+=+b.dataset.q;if(i.q<1)cart.splice(+b.dataset.k,1);save();renderCart()}
+  else if(b.id==="openCart"){$("#checkoutNote").hidden=true;$("#cart").showModal()}
+  else if(b.id==="checkout"){$("#checkoutNote").hidden=false}
+  else if("close" in b.dataset){b.closest("dialog").close()}
+});
+cart=cart.filter(i=>P.some(p=>p.id===i.id&&!p.soon));
+applyText();
+</script>
+<!--/BODY-->
+</body>
+</html>
