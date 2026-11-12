@@ -1,0 +1,401 @@
+<title>Illuzion Караоке</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Layout: dark single-world "night club" — sticky nav, glowing hero, VIP room cards, booking panel, map/contacts */
+  :root{
+    --night:#120a1c;        /* deep aubergine night */
+    --night-2:#1b0f2b;      /* raised surface */
+    --card:#241536;         /* card fill */
+    --line:#3a2756;         /* hairline on dark */
+    --fg:#f4ecff;           /* primary text */
+    --muted:#b3a0cf;        /* secondary text */
+    --magenta:#ff3d9a;      /* hot spotlight */
+    --coral:#ff7a4d;        /* warm spotlight */
+    --gold:#ffcf6b;         /* champagne accent */
+    --glow:rgba(255,61,154,.45);
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(900px 520px at 80% -8%, rgba(255,61,154,.20), transparent 60%),
+      radial-gradient(760px 480px at 8% 4%, rgba(120,70,255,.18), transparent 58%),
+      var(--night);
+    color:var(--fg);
+    font-family:"Manrope", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .wrap{width:100%;max-width:1120px;margin-inline:auto;
+    padding-left:max(20px, env(safe-area-inset-left,0px));
+    padding-right:max(20px, env(safe-area-inset-right,0px));}
+  h1,h2,h3{font-family:"Unbounded", "Manrope", sans-serif;line-height:1.05;text-wrap:balance;margin:0;letter-spacing:-.01em}
+  a{color:inherit}
+  .eyebrow{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:700}
+
+  /* top bar painted under the phone status bar */
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:rgba(18,10,28,.9)}
+  header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;
+    background:rgba(18,10,28,.72);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;gap:18px;padding-block:14px}
+  .brand{font-family:"Unbounded",sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:.02em;
+    background:linear-gradient(92deg,var(--magenta),var(--coral) 60%,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .nav-links{margin-left:auto;display:flex;gap:26px;font-size:.92rem;color:var(--muted)}
+  .nav-links a{text-decoration:none}
+  .nav-links a:hover{color:var(--fg)}
+  .nav-cta{display:inline-flex;align-items:center;padding:9px 18px;border-radius:999px;font-weight:700;font-size:.9rem;
+    color:#1a0a16;background:linear-gradient(92deg,var(--gold),var(--coral));text-decoration:none}
+  @media (max-width:760px){.nav-links{display:none}}
+
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:999px;font-weight:700;
+    text-decoration:none;font-size:1rem;border:0;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease}
+  .btn-primary{color:#1a0a16;background:linear-gradient(92deg,var(--magenta),var(--coral));box-shadow:0 10px 34px var(--glow)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 44px var(--glow)}
+  .btn-ghost{color:var(--fg);background:transparent;border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--magenta);transform:translateY(-2px)}
+
+  /* HERO */
+  .hero{position:relative;padding-block:72px 54px}
+  .hero .eyebrow{display:block;margin-bottom:22px}
+  .hero h1{font-size:clamp(3.1rem,13vw,7rem);font-weight:800}
+  .hero h1 .glow{background:linear-gradient(92deg,#fff,var(--magenta) 45%,var(--coral) 72%,var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 26px var(--glow));
+    animation:pulse 4.5s ease-in-out infinite}
+  @keyframes pulse{0%,100%{filter:drop-shadow(0 0 18px var(--glow))}50%{filter:drop-shadow(0 0 40px var(--glow))}}
+  .hero p.lead{max-width:50ch;margin:24px 0 0;color:var(--muted);font-size:1.18rem}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+  .hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:8px 22px;color:var(--muted);font-size:.95rem}
+  .hero-meta b{color:var(--fg);font-weight:600}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:52px}
+  .stat{background:linear-gradient(180deg,var(--night-2),transparent);border:1px solid var(--line);border-radius:18px;padding:22px}
+  .stat .n{font-family:"Unbounded",sans-serif;font-size:1.9rem;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .n span{background:linear-gradient(92deg,var(--magenta),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .l{color:var(--muted);font-size:.86rem;margin-top:4px}
+  @media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  section.block{padding-block:66px}
+  .head{max-width:60ch;margin-bottom:40px}
+  .head h2{font-size:clamp(1.9rem,5.5vw,3rem);font-weight:800}
+  .head p{color:var(--muted);font-size:1.08rem;margin:16px 0 0}
+
+  /* ROOMS */
+  .rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .room{position:relative;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--card);
+    min-width:0;display:flex;flex-direction:column;transition:transform .2s ease, border-color .2s ease}
+  .room:hover{transform:translateY(-6px);border-color:var(--magenta)}
+  .room .top{height:132px;display:flex;align-items:flex-end;padding:16px;
+    background:radial-gradient(130px 90px at 80% 10%, rgba(255,61,154,.5), transparent 70%), linear-gradient(135deg,#2a173f,#3a1c2e)}
+  .room.b .top{background:radial-gradient(130px 90px at 80% 10%, rgba(120,90,255,.5), transparent 70%), linear-gradient(135deg,#1f1640,#33204d)}
+  .room.c .top{background:radial-gradient(130px 90px at 80% 10%, rgba(255,160,80,.5), transparent 70%), linear-gradient(135deg,#3a241b,#43182e)}
+  .room .tag{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700;
+    background:rgba(18,10,28,.55);padding:5px 11px;border-radius:999px}
+  .room .body{padding:22px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .room h3{font-size:1.35rem;font-weight:800}
+  .room .cap{color:var(--muted);font-size:.95rem}
+  .room ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:.92rem}
+  .room li{display:flex;gap:9px;align-items:flex-start}
+  .room li::before{content:"";width:7px;height:7px;border-radius:50%;margin-top:8px;background:linear-gradient(92deg,var(--magenta),var(--gold));flex:0 0 auto}
+  .room .price{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);font-family:"Unbounded",sans-serif;font-weight:700}
+  .room .price span{color:var(--muted);font-family:"Manrope";font-weight:500;font-size:.85rem}
+  @media (max-width:860px){.rooms{grid-template-columns:1fr}}
+
+  /* FEATURES */
+  .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .f{border:1px solid var(--line);border-radius:18px;padding:24px;background:linear-gradient(180deg,var(--night-2),transparent)}
+  .f .ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:1.4rem;
+    background:rgba(255,61,154,.12);border:1px solid var(--line);margin-bottom:14px}
+  .f h3{font-size:1.1rem;font-weight:700;font-family:"Manrope",sans-serif}
+  .f p{color:var(--muted);font-size:.93rem;margin:8px 0 0}
+  @media (max-width:860px){.feat{grid-template-columns:1fr}}
+
+  /* BOOK + CONTACT */
+  .split{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:stretch}
+  @media (max-width:860px){.split{grid-template-columns:1fr}}
+  .panel{border:1px solid var(--line);border-radius:22px;padding:28px;background:var(--card)}
+  .panel h3{font-size:1.5rem;font-weight:800;margin-bottom:6px}
+  .panel .sub{color:var(--muted);margin-bottom:20px}
+  label{display:block;font-size:.82rem;color:var(--muted);margin:0 0 6px;letter-spacing:.02em}
+  .field{margin-bottom:16px}
+  input,select{width:100%;padding:13px 15px;border-radius:12px;border:1px solid var(--line);
+    background:var(--night);color:var(--fg);font:inherit;font-size:.98rem}
+  input:focus,select:focus{outline:2px solid var(--magenta);outline-offset:1px;border-color:transparent}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .form-note{margin-top:14px;font-size:.88rem;color:var(--muted)}
+  .book-result{margin-top:16px;padding:14px 16px;border-radius:12px;border:1px solid var(--line);
+    background:rgba(255,61,154,.08);font-size:.95rem}
+
+  .contact-row{display:flex;flex-direction:column;gap:18px}
+  .cline{display:flex;gap:14px;align-items:flex-start}
+  .cline .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:1.15rem;flex:0 0 auto;
+    background:rgba(255,207,107,.12);border:1px solid var(--line)}
+  .cline .k{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .cline .v{font-size:1.05rem;font-weight:600}
+  .copyline{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .copybtn{font:inherit;font-size:.8rem;cursor:pointer;color:var(--gold);background:transparent;
+    border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+  .copybtn:hover{border-color:var(--gold)}
+  .hours{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  .hrow{display:flex;justify-content:space-between;gap:14px;font-size:.95rem;border-bottom:1px dashed var(--line);padding-bottom:7px}
+  .hrow span:first-child{color:var(--muted)}
+  .hrow b{font-weight:600;font-variant-numeric:tabular-nums}
+
+  .maplink{margin-top:20px;display:inline-flex;align-items:center;gap:10px;
+    padding:13px 22px;border-radius:999px;border:1px solid var(--line);text-decoration:none;font-weight:700}
+  .maplink:hover{border-color:var(--gold)}
+
+  footer{border-top:1px solid var(--line);margin-top:30px;padding-block:34px 44px;color:var(--muted)}
+  .foot-in{display:flex;flex-wrap:wrap;gap:16px 40px;align-items:center;justify-content:space-between}
+  .foot-brand{font-family:"Unbounded",sans-serif;font-weight:800;font-size:1.2rem;
+    background:linear-gradient(92deg,var(--magenta),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .foot-in a{color:var(--muted);text-decoration:none}
+  .foot-in a:hover{color:var(--fg)}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <span class="brand">ILLUZION</span>
+    <nav class="nav-links">
+      <a href="#about">О клубе</a>
+      <a href="#rooms">Залы</a>
+      <a href="#feat">Сервис</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+    <a class="nav-cta" href="#book">Забронировать</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <span class="eyebrow">Караоке-зал · Астана</span>
+    <h1>Пой как в <span class="glow">иллюзии</span></h1>
+    <p class="lead">Уютные VIP-кабинки, студийный звук и каталог на десятки тысяч песен — от казахской эстрады до мировых хитов. Собери компанию и забери вечер себе.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#book">Забронировать стол →</a>
+      <a class="btn btn-ghost" href="#rooms">Смотреть залы</a>
+    </div>
+    <div class="hero-meta">
+      <span><b>Пн–Чт, Вс:</b> 18:00 – 03:00</span>
+      <span><b>Пт–Сб:</b> 18:00 – 05:00</span>
+      <span><b>Астана</b>, Казахстан</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="n"><span>50 000+</span></div><div class="l">песен в каталоге</div></div>
+      <div class="stat"><div class="n"><span>8</span></div><div class="l">VIP-залов и кабинок</div></div>
+      <div class="stat"><div class="n"><span>до 40</span></div><div class="l">гостей в большом зале</div></div>
+      <div class="stat"><div class="n"><span>5</span></div><div class="l">языков в репертуаре</div></div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="about">
+    <div class="head">
+      <span class="eyebrow">О клубе</span>
+      <h2>Место, где голос звучит лучше, чем в душе</h2>
+      <p>Illuzion — это не просто караоке, а вечер под ключ: приглушённый свет, мягкие диваны, профессиональные микрофоны Shure и честный бар. Приходите отметить день рождения, закрыть сделку или просто спеть до утра — мы подготовим зал под вашу компанию.</p>
+    </div>
+    <div class="feat">
+      <div class="f"><div class="ic">🎙️</div><h3>Студийный звук</h3><p>Акустика, беспроводные микрофоны и настройка под голос — вас будет слышно без хрипа и эха.</p></div>
+      <div class="f"><div class="ic">🍸</div><h3>Бар и кухня</h3><p>Коктейли, крепкий алкоголь, кальян и горячее меню с подачей прямо в зал.</p></div>
+      <div class="f"><div class="ic">🎛️</div><h3>Свой ведущий</h3><p>По запросу — диджей или хост, который держит настроение весь вечер.</p></div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="rooms">
+    <div class="head">
+      <span class="eyebrow">Залы</span>
+      <h2>Выберите кабинку под свою компанию</h2>
+      <p>От камерных кабинок на двоих до большого зала для корпоратива. Цены ориентировочные — точную стоимость и доступность уточняйте при бронировании.</p>
+    </div>
+    <div class="rooms">
+      <div class="room a">
+        <div class="top"><span class="tag">2–6 гостей</span></div>
+        <div class="body">
+          <h3>Кабинка «Соло»</h3>
+          <div class="cap">Камерный формат для своих</div>
+          <ul>
+            <li>Уютный диван и большой экран</li>
+            <li>Отдельный микрофон и пульт выбора песен</li>
+            <li>Барное обслуживание в зал</li>
+          </ul>
+          <div class="price">от 8 000 ₸ <span>/ час</span></div>
+        </div>
+      </div>
+      <div class="room b">
+        <div class="top"><span class="tag">6–14 гостей</span></div>
+        <div class="body">
+          <h3>Зал «Премьер»</h3>
+          <div class="cap">Для дружеской компании и праздника</div>
+          <ul>
+            <li>Два микрофона и подсветка сцены</li>
+            <li>Стол с закусками и напитками</li>
+            <li>Возможность украсить зал к событию</li>
+          </ul>
+          <div class="price">от 15 000 ₸ <span>/ час</span></div>
+        </div>
+      </div>
+      <div class="room c">
+        <div class="top"><span class="tag">до 40 гостей</span></div>
+        <div class="body">
+          <h3>Большой зал «Иллюзион»</h3>
+          <div class="cap">Корпоративы и большие события</div>
+          <ul>
+            <li>Полноценная сцена и свет</li>
+            <li>Ведущий и диджей по запросу</li>
+            <li>Банкетное меню и депозит по договорённости</li>
+          </ul>
+          <div class="price">по запросу <span>/ вечер</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="feat">
+    <div class="head">
+      <span class="eyebrow">Почему к нам</span>
+      <h2>Всё для идеального вечера</h2>
+    </div>
+    <div class="feat">
+      <div class="f"><div class="ic">📚</div><h3>Огромный каталог</h3><p>Казахские, русские, английские, турецкие и корейские хиты — от ретро до новинок этого месяца.</p></div>
+      <div class="f"><div class="ic">🎂</div><h3>Дни рождения</h3><p>Торт, оформление и сюрприз от заведения имениннику — организуем под ключ.</p></div>
+      <div class="f"><div class="ic">🅿️</div><h3>Удобно добраться</h3><p>В центре Астаны, с парковкой рядом. Маршрут — в один тап через 2ГИС.</p></div>
+      <div class="f"><div class="ic">🚭</div><h3>Чистый воздух</h3><p>Отдельная зона для курения и кальяна, чтобы в зале дышалось легко.</p></div>
+      <div class="f"><div class="ic">💳</div><h3>Удобная оплата</h3><p>Карты, Kaspi и наличные. Депозит на большой зал — по договорённости.</p></div>
+      <div class="f"><div class="ic">🕛</div><h3>До самого утра</h3><p>В пятницу и субботу поём до 05:00 — вечер заканчивается, когда захотите вы.</p></div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="book">
+    <div class="split">
+      <div class="panel">
+        <h3>Забронировать стол</h3>
+        <p class="sub">Оставьте данные — и мы подтвердим бронь по телефону. Это предварительная заявка, а не оплата.</p>
+        <form id="bookForm" novalidate>
+          <div class="field">
+            <label for="bname">Ваше имя</label>
+            <input id="bname" name="bname" type="text" placeholder="Напр. Алия" autocomplete="name" required>
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="bphone">Телефон</label>
+              <input id="bphone" name="bphone" type="tel" placeholder="+7 ___ ___ __ __" autocomplete="tel" required>
+            </div>
+            <div class="field">
+              <label for="bguests">Гостей</label>
+              <input id="bguests" name="bguests" type="number" min="1" max="40" placeholder="6">
+            </div>
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="bdate">Дата</label>
+              <input id="bdate" name="bdate" type="date">
+            </div>
+            <div class="field">
+              <label for="broom">Зал</label>
+              <select id="broom" name="broom">
+                <option>Кабинка «Соло» · 2–6</option>
+                <option>Зал «Премьер» · 6–14</option>
+                <option>Большой зал «Иллюзион» · до 40</option>
+                <option>Не определились — подскажите</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Отправить заявку</button>
+          <p class="form-note">Нажимая кнопку, вы получите текст заявки, который можно отправить нам в WhatsApp или назвать по телефону.</p>
+          <div class="book-result" id="bookResult" hidden></div>
+        </form>
+      </div>
+
+      <div class="panel" id="contact">
+        <h3>Контакты</h3>
+        <p class="sub">Астана · караоке-зал Illuzion</p>
+        <div class="contact-row">
+          <div class="cline">
+            <div class="ic">📞</div>
+            <div>
+              <div class="k">Бронь и вопросы</div>
+              <div class="copyline"><span class="v" id="phoneText">+7 (700) 000-00-00</span>
+                <button class="copybtn" data-copy="#phoneText" type="button">Копировать</button></div>
+            </div>
+          </div>
+          <div class="cline">
+            <div class="ic">📍</div>
+            <div>
+              <div class="k">Адрес</div>
+              <div class="v" id="addrText">Астана, уточните по карте</div>
+            </div>
+          </div>
+          <div class="cline">
+            <div class="ic">🕒</div>
+            <div style="flex:1">
+              <div class="k">Часы работы</div>
+              <div class="hours">
+                <div class="hrow"><span>Пн — Чт</span><b>18:00 – 03:00</b></div>
+                <div class="hrow"><span>Пт — Сб</span><b>18:00 – 05:00</b></div>
+                <div class="hrow" style="border:0"><span>Воскресенье</span><b>18:00 – 03:00</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <a class="maplink" href="https://2gis.kz/astana/geo/70000001096255954/71.460002,51.160776" target="_blank" rel="noopener">🗺️ Открыть в 2ГИС</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <span class="foot-brand">ILLUZION</span>
+    <span>Караоке-зал в Астане · поём каждый вечер</span>
+    <a href="https://2gis.kz/astana/geo/70000001096255954/71.460002,51.160776" target="_blank" rel="noopener">Как добраться →</a>
+  </div>
+</footer>
+
+<script>
+  // Copy buttons (with graceful fallback)
+  document.querySelectorAll('.copybtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var el = document.querySelector(btn.dataset.copy);
+      if(!el) return;
+      var txt = el.textContent.trim();
+      var done = function(){ var o=btn.textContent; btn.textContent='Скопировано ✓'; setTimeout(function(){btn.textContent=o;},1500); };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done).catch(function(){ selectText(el); });
+      } else { selectText(el); }
+    });
+  });
+  function selectText(el){
+    try{ var r=document.createRange(); r.selectNodeContents(el); var s=getSelection(); s.removeAllRanges(); s.addRange(r); }catch(e){}
+  }
+
+  // Booking form -> builds a message to send, no real submission
+  var form = document.getElementById('bookForm');
+  var result = document.getElementById('bookResult');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var name=document.getElementById('bname').value.trim();
+    var phone=document.getElementById('bphone').value.trim();
+    if(!name || !phone){
+      result.hidden=false;
+      result.innerHTML='Пожалуйста, укажите имя и телефон — чтобы мы могли подтвердить бронь.';
+      return;
+    }
+    var guests=document.getElementById('bguests').value.trim();
+    var date=document.getElementById('bdate').value;
+    var room=document.getElementById('broom').value;
+    var msg='Заявка в Illuzion: '+name+', '+phone
+      +(guests?(', гостей: '+guests):'')
+      +(date?(', дата: '+date):'')
+      +', зал: '+room+'.';
+    result.hidden=false;
+    result.innerHTML='<b>Заявка готова!</b><br>'+msg
+      +'<br><br>Позвоните нам по номеру <b>'+document.getElementById('phoneText').textContent.trim()
+      +'</b> или отправьте этот текст в WhatsApp — и мы подтвердим бронь.';
+    result.scrollIntoView({behavior:'smooth', block:'nearest'});
+  });
+</script>
