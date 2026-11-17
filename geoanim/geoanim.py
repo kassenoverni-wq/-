@@ -139,11 +139,76 @@ def build_texture(earth_path, relief_path=None, width=8192, out_path=None):
     return e
 
 
+def fetch_gibs(lon0, lat0, lon1, lat1, px_per_deg=150, out_path=None,
+               layer="BlueMarble_NextGeneration", tile_deg=8.0):
+    """High-res public-domain NASA GIBS imagery for a lon/lat box (stitched from WMS tiles)."""
+    if out_path and os.path.exists(out_path):
+        return cv2.imread(out_path)
+    import urllib.request
+    cols = max(1, math.ceil((lon1 - lon0) / tile_deg))
+    rows = max(1, math.ceil((lat1 - lat0) / tile_deg))
+    dw, dh = (lon1 - lon0) / cols, (lat1 - lat0) / rows
+    tw, th = int(round(dw * px_per_deg)), int(round(dh * px_per_deg))
+    out = np.zeros((th * rows, tw * cols, 3), np.uint8)
+    for r in range(rows):
+        for c in range(cols):
+            a0, a1 = lat1 - (r + 1) * dh, lat1 - r * dh
+            o0, o1 = lon0 + c * dw, lon0 + (c + 1) * dw
+            url = ("https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap"
+                   f"&VERSION=1.3.0&LAYERS={layer}&STYLES=&CRS=EPSG:4326&BBOX={a0},{o0},{a1},{o1}"
+                   f"&WIDTH={tw}&HEIGHT={th}&FORMAT=image/jpeg")
+            data = urllib.request.urlopen(url, timeout=120).read()
+            tile = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
+            out[r * th:(r + 1) * th, c * tw:(c + 1) * tw] = cv2.resize(tile, (tw, th))
+    if out_path:
+        cv2.imwrite(out_path, out, [cv2.IMWRITE_JPEG_QUALITY, 92])
+    return out
+
+
 class Texture:
     def __init__(self, img):
         self.levels = [img]
         while self.levels[-1].shape[1] > 1024:
             self.levels.append(cv2.pyrDown(self.levels[-1]))
+        self.patches = []
+
+    def add_patch(self, img, lon0, lat0, lon1, lat1, feather=0.06):
+        """Overlay sharper imagery for a region; colours are matched to the base map."""
+        img = img.astype(np.float32)
+        base = self.levels[0]
+        th, tw = base.shape[:2]
+        x0, x1 = int((lon0 + 180) / 360 * tw), int((lon1 + 180) / 360 * tw)
+        y0, y1 = int((90 - lat1) / 180 * th), int((90 - lat0) / 180 * th)
+        ref = cv2.resize(base[y0:y1, x0:x1], (img.shape[1], img.shape[0])).astype(np.float32)
+        small = cv2.resize(img, (ref.shape[1], ref.shape[0]))
+        for ch in range(3):  # per-channel mean/std transfer
+            m_s, s_s = small[..., ch].mean(), small[..., ch].std() + 1e-6
+            m_r, s_r = ref[..., ch].mean(), ref[..., ch].std() + 1e-6
+            img[..., ch] = (img[..., ch] - m_s) * (s_r / s_s) + m_r
+        # keep the base map's low frequencies so seams vanish, take detail from the patch
+        low_ref = cv2.GaussianBlur(ref, (0, 0), 12)
+        low_img = cv2.GaussianBlur(img, (0, 0), 12)
+        img = np.clip(img - low_img + low_ref, 0, 255).astype(np.uint8)
+        h, w = img.shape[:2]
+        fy, fx = max(1, int(h * feather)), max(1, int(w * feather))
+        ay = np.minimum(np.arange(h) / fy, (h - 1 - np.arange(h)) / fy).clip(0, 1)
+        ax = np.minimum(np.arange(w) / fx, (w - 1 - np.arange(w)) / fx).clip(0, 1)
+        alpha = (np.outer(ay, ax) * 255).astype(np.uint8)
+        levels = [(img, alpha)]
+        while levels[-1][0].shape[1] > 512:
+            levels.append((cv2.pyrDown(levels[-1][0]), cv2.pyrDown(levels[-1][1])))
+        self.patches.append(((lon0, lat0, lon1, lat1), levels))
+
+    def _warp(self, tex, box, lon0, lat0, dpp, k, border):
+        plon0, plat0, plon1, plat1 = box
+        th, tw = tex.shape[:2]
+        ax = dpp / k * tw / (plon1 - plon0)
+        ay = dpp * th / (plat1 - plat0)
+        tx0 = (lon0 - plon0) / (plon1 - plon0) * tw
+        ty0 = (plat1 - lat0) / (plat1 - plat0) * th
+        M = np.float32([[ax, 0, tx0 - ax * W / 2], [0, ay, ty0 - ay * H / 2]])
+        return cv2.warpAffine(tex, M, (W, H), flags=cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP,
+                              borderMode=border), ax
 
     def render(self, lon0, lat0, span):
         """Frame showing `span` degrees of latitude vertically, centred on lon0/lat0."""
@@ -154,15 +219,24 @@ class Texture:
         lvl = 0
         while lvl + 1 < len(self.levels) and a / (2 ** (lvl + 1)) >= 0.75:
             lvl += 1
-        tex = self.levels[lvl]
-        th, tw = tex.shape[:2]
-        ax = dpp / k * tw / 360.0
-        ay = dpp * th / 180.0
-        tx0 = (lon0 + 180) / 360.0 * tw
-        ty0 = (90 - lat0) / 180.0 * th
-        M = np.float32([[ax, 0, tx0 - ax * W / 2], [0, ay, ty0 - ay * H / 2]])
-        return cv2.warpAffine(tex, M, (W, H), flags=cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP,
-                              borderMode=cv2.BORDER_WRAP)
+        frame, _ = self._warp(self.levels[lvl], (-180, -90, 180, 90), lon0, lat0, dpp, k, cv2.BORDER_WRAP)
+        if a < 0.6:  # zoomed in past the base resolution: use detail patches
+            half_w, half_h = W / 2 * dpp / k, H / 2 * dpp
+            for (box, levels) in self.patches:
+                if (box[0] > lon0 + half_w or box[2] < lon0 - half_w or
+                        box[1] > lat0 + half_h or box[3] < lat0 - half_h):
+                    continue
+                pa = dpp / k * levels[0][0].shape[1] / (box[2] - box[0])
+                pl = 0
+                while pl + 1 < len(levels) and pa / (2 ** (pl + 1)) >= 0.75:
+                    pl += 1
+                img, alpha = levels[pl]
+                pimg, _ = self._warp(img, box, lon0, lat0, dpp, k, cv2.BORDER_CONSTANT)
+                palpha, _ = self._warp(alpha, box, lon0, lat0, dpp, k, cv2.BORDER_CONSTANT)
+                fade_in = clamp01((0.6 - a) / 0.3)  # blend in gradually while zooming
+                al = palpha.astype(np.float32)[..., None] / 255.0 * fade_in
+                frame = np.clip(frame * (1 - al) + pimg * al, 0, 255).astype(np.uint8)
+        return frame
 
 
 # ------------------------------------------------------------------- camera
@@ -545,6 +619,72 @@ class Vignette(Element):
 
     def draw(self, frame, view, t):
         blend(frame, (0, 0, 0), self.a)
+
+
+# ------------------------------------------------------------- voice track
+def _wav_dur(p):
+    import wave
+    with wave.open(p) as w:
+        return w.getnframes() / w.getframerate()
+
+
+def build_voice_track(n_lines, voice_dir, work, lead=0.4, gap=0.35, tail=1.0):
+    """line1.wav..lineN.wav -> one normalised track. Returns (path, [(start, end)], total)."""
+    os.makedirs(work, exist_ok=True)
+    spans, parts, t = [], [], lead
+    for i in range(1, n_lines + 1):
+        src = os.path.join(voice_dir, f"line{i}.wav")
+        norm = os.path.join(work, f"n{i}.wav")
+        subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "error", "-y", "-i", src, "-ac", "1", "-ar", "48000",
+                        "-af", "silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
+                               "silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
+                               "loudnorm=I=-16:TP=-1.5:LRA=11", norm], check=True)
+        d = _wav_dur(norm)
+        spans.append((t, t + d))
+        parts.append((t, norm))
+        t += d + gap
+    total = spans[-1][1] + tail
+    inputs, filt = [], []
+    for k, (st, p) in enumerate(parts):
+        inputs += ["-i", p]
+        filt.append(f"[{k}:a]adelay={int(st * 1000)}|{int(st * 1000)}[d{k}]")
+    mix = "".join(f"[d{k}]" for k in range(len(parts)))
+    filt.append(f"{mix}amix=inputs={len(parts)}:normalize=0,apad,atrim=0:{total:.3f}[a]")
+    out = os.path.join(work, "voice_track.wav")
+    subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "error", "-y", *inputs, "-filter_complex", ";".join(filt),
+                    "-map", "[a]", "-ar", "48000", out], check=True)
+    return out, spans, total
+
+
+def caption_chunks(audio, spans, lines, language="en", max_words=3):
+    """Whisper word timings, authored words from `lines`. Returns [(start, end, text)]."""
+    from faster_whisper import WhisperModel
+    model = WhisperModel("small", device="cpu", compute_type="int8")
+    segs, _ = model.transcribe(audio, language=language, word_timestamps=True, vad_filter=False)
+    words = [w for s in segs for w in s.words]
+    chunks = []
+    for (s, e), line in zip(spans, lines):
+        authored = line.split()
+        ws = [w for w in words if s - 0.25 <= (w.start + w.end) / 2 <= e + 0.25]
+        if len(ws) == len(authored):
+            times = [(w.start, w.end) for w in ws]
+        else:  # even spacing inside the line when word counts disagree
+            step = (e - s) / len(authored)
+            times = [(s + i * step, s + (i + 1) * step) for i in range(len(authored))]
+        i = 0
+        while i < len(authored):
+            j = min(i + max_words, len(authored))
+            for k in range(i, j):
+                if authored[k][-1] in ",.?!" and k + 1 < j:
+                    j = k + 1
+                    break
+            chunks.append((times[i][0], times[j - 1][1] + 0.05, " ".join(authored[i:j])))
+            i = j
+    out = []
+    for n, (a, b, txt) in enumerate(chunks):
+        nxt = chunks[n + 1][0] if n + 1 < len(chunks) else b + 0.4
+        out.append((a, nxt if nxt - b < 0.5 else b + 0.15, txt))
+    return out
 
 
 # ----------------------------------------------------------------- render
