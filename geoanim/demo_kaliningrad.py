@@ -16,11 +16,14 @@ LINES = [
     "Back then it didn't matter, because Lithuania was part of the Soviet Union too.",
     "But when the Soviet Union collapsed in 1991, Lithuania walked away, and Kaliningrad was left stranded.",
     "Today it's surrounded by NATO, and it's still home to Russia's Baltic Fleet.",
+    "So to drive from Moscow to Kaliningrad, you have to cross at least two other countries.",
 ]
 
 RED, BLUE, GOLD, GREEN = (50, 50, 225), (205, 120, 40), (40, 175, 235), (70, 170, 60)  # BGR (map layers)
 RED_BG, BLUE_BG, GOLD_BG = (225, 50, 50, 245), (40, 120, 205, 245), (235, 175, 40, 245)  # RGBA (label pills)
 KGD_CITY, MOSCOW, BALTIYSK = (20.51, 54.71), (37.62, 55.75), (19.92, 54.65)
+SMOLENSK, MINSK, VILNIUS = (32.05, 54.78), (27.56, 53.90), (25.28, 54.69)
+GREY = (225, 225, 225)
 
 
 def main():
@@ -33,7 +36,7 @@ def main():
     ap.add_argument("--preview", type=lambda s: [float(x) for x in s.split(",")], default=None)
     a = ap.parse_args()
 
-    audio, S, total = ga.build_voice_track(len(LINES), a.voice, a.work)
+    audio, S, total = ga.build_voice_track(len(LINES), a.voice, a.work, tail=3.0)
     print("line spans:", [(round(s, 2), round(e, 2)) for s, e in S], "total", round(total, 2), flush=True)
     caps = ga.caption_chunks(audio, S, LINES)
 
@@ -49,7 +52,7 @@ def main():
     poland, lith = countries.get("Poland"), countries.get("Lithuania")
     latvia, eston, belarus = countries.get("Latvia"), countries.get("Estonia"), countries.get("Belarus")
 
-    s1, s2, s3, s4, s5, s6 = S
+    s1, s2, s3, s4, s5, s6, s7 = S
     mid3 = s3[0] + (s3[1] - s3[0]) * 0.55
     walk = s5[0] + (s5[1] - s5[0]) * 0.5
     cam = ga.Camera([
@@ -63,7 +66,9 @@ def main():
         (s4[0] + 1.0, 25.5, 56.2, 17),        # Baltic Soviet republics
         (s6[0] + 0.1, 25.5, 56.2, 17),
         (s6[0] + 1.0, 22.3, 54.4, 12),        # surrounded
-        (total, 22.3, 54.4, 11.5),
+        (s7[0] + 0.1, 22.3, 54.4, 11.5),
+        (s7[0] + 1.4, 29.0, 54.9, 25),        # the road from Moscow
+        (total, 28.5, 54.6, 27),
     ])
 
     els = [ga.Vignette(0.38)]
@@ -114,18 +119,41 @@ def main():
         ga.Eyes(k4, s5[0] + 0.3, s6[0] + 0.4, size=120, mood="shock", look=(28.0, 54.0)),
     ]
     # 6: surrounded by NATO, Baltic Fleet
-    k6 = ga.Highlight(kgd, s6[0] + 0.3, total, color=RED)
+    e6 = s7[0] + 0.4
+    k6 = ga.Highlight(kgd, s6[0] + 0.3, e6, color=RED)
     els += [
-        ga.Highlight(poland, s6[0] + 0.8, total, color=BLUE, style="glow"),
-        ga.Highlight(lith, s6[0] + 1.0, total, color=BLUE, style="glow"),
+        ga.Highlight(poland, s6[0] + 0.8, e6, color=BLUE, style="glow"),
+        ga.Highlight(lith, s6[0] + 1.0, e6, color=BLUE, style="glow"),
         k6,
-        ga.Label("NATO", poland, s6[0] + 1.1, total, size=52, offset=(0, 0),
+        ga.Label("NATO", poland, s6[0] + 1.1, e6, size=52, offset=(0, 0),
                  bg=BLUE_BG, fill=(255, 255, 255)),
-        ga.Label("NATO", lith, s6[0] + 1.3, total, size=52, offset=(0, 0),
+        ga.Label("NATO", lith, s6[0] + 1.3, e6, size=52, offset=(0, 0),
                  bg=BLUE_BG, fill=(255, 255, 255)),
-        ga.Eyes(k6, s6[0] + 0.5, total, size=130, mood="angry", look=(23.0, 53.0)),
-        ga.Label("BALTIC FLEET", BALTIYSK, s6[1] - 1.8, total, size=44, offset=(-30, -150),
+        ga.Eyes(k6, s6[0] + 0.5, e6, size=130, mood="angry", look=(23.0, 53.0)),
+        ga.Label("BALTIC FLEET", BALTIYSK, s6[1] - 1.8, e6, size=44, offset=(-30, -150),
                  bg=RED_BG, fill=(255, 255, 255)),
+    ]
+    # 7: punchline - the drive from Moscow crosses two countries, then the end card
+    k7 = ga.Highlight(kgd, s7[0] + 0.2, total, color=RED)
+    end = s7[1] + 0.3
+    els += [
+        k7,
+        ga.Highlight(belarus, s7[0] + 1.4, total, color=GREY, fill_alpha=0.40, glow=False),
+        ga.Highlight(lith, s7[0] + 1.8, total, color=GREY, fill_alpha=0.40, glow=False),
+        ga.Label("MOSCOW", MOSCOW, s7[0] + 1.0, total, size=40, offset=(-40, -70),
+                 bg=RED_BG, fill=(255, 255, 255)),
+        ga.Route([MOSCOW, SMOLENSK, MINSK, VILNIUS, KGD_CITY], s7[0] + 1.2, total, draw_time=2.4,
+                 color=(60, 220, 255)),
+        ga.Label("1", belarus, s7[0] + 1.6, total, size=80, offset=(0, 40),
+                 bg=(255, 255, 255, 245), fill=(30, 30, 30)),
+        ga.Label("2", lith, s7[0] + 2.2, total, size=80, offset=(0, -40),
+                 bg=(255, 255, 255, 245), fill=(30, 30, 30)),
+        ga.Eyes(k7, s7[0] + 0.4, end, size=120, mood="worried", look=MOSCOW),
+        ga.Eyes(k7, end, total, size=120, mood="smug", wink_at=end + 0.9),
+        ga.Label("FOLLOW FOR MORE", (28.5, 51.6), end, total, size=60,
+                 bg=(255, 255, 255, 245), fill=(30, 30, 30)),
+        ga.Label("WEIRD GEOGRAPHY", (28.5, 50.6), end + 0.25, total, size=60,
+                 bg=GOLD_BG, fill=(30, 30, 30)),
         ga.Captions(caps, y=0.78, size=66),
     ]
 
