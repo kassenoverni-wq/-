@@ -36,6 +36,29 @@ Montserrat-ExtraBold.ttf   font for labels and captions (OFL)
 Requirements: `python3`, `numpy`, `opencv-python`, `pillow`, `faster-whisper`
 (captions), `ffmpeg`.
 
+### Sharper close-ups
+
+The base map is 8K, which gets soft when you zoom into small countries. For
+close-ups, add a detail patch from NASA GIBS (Blue Marble, public domain); it
+is colour-matched to the base map and fades in as the camera zooms:
+
+```python
+box = (12.0, 50.0, 40.0, 60.5)          # lon0, lat0, lon1, lat1
+tex.add_patch(ga.fetch_gibs(*box, px_per_deg=150, out_path="data/gibs_baltic.jpg"), *box)
+```
+
+### Colours
+
+Map layers (`Highlight`, `Route`, `XMark`) take **BGR** tuples (OpenCV);
+`Label` pills take **RGB(A)** (Pillow).
+
+### Examples
+
+* `demo_kazakhstan.py` — Kazakhstan's coastline on the Caspian (23 s)
+* `demo_kaliningrad.py` — Kaliningrad, the Russian exclave (29 s); uses the
+  shared `ga.build_voice_track()` / `ga.caption_chunks()` helpers and a GIBS
+  detail patch — the best template to copy.
+
 ## Making a new video
 
 1. Write the script as separate lines (one line ≈ one scene).
