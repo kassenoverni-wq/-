@@ -487,6 +487,8 @@ class Eyes(Element):
 
 
 class Label(Element):
+    """Rounded pill label. NB: `bg` / `fill` are RGB(A), unlike map layers which use BGR."""
+
     def __init__(self, text, at, start, end, size=50, bg=(255, 255, 255, 235), fill=(25, 25, 25),
                  offset=(0, -110)):
         super().__init__(start, end)

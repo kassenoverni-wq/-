@@ -153,7 +153,7 @@ def main():
         ga.Eyes(hl_ger, s4[0] + 2.0, s5[0] + 0.5, size=110, mood="shock", look=(50.5, 42.0)),
         ga.Eyes(hl_kz, s5[0] + 1.0, total, size=170, mood="smug", wink_at=s5[1] - 0.9),
         ga.Label("STILL LANDLOCKED", kz, s5[0] + 2.2, total, size=46, offset=(0, 190),
-                 bg=(30, 120, 245, 240), fill=(255, 255, 255)),
+                 bg=(245, 120, 30, 240), fill=(255, 255, 255)),  # label colours are RGBA
         ga.Captions(caps, y=0.78, size=66),
     ]
     if a.preview:

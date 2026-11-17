@@ -18,7 +18,8 @@ LINES = [
     "Today it's surrounded by NATO, and it's still home to Russia's Baltic Fleet.",
 ]
 
-RED, BLUE, GOLD, GREEN = (50, 50, 225), (205, 120, 40), (40, 175, 235), (70, 170, 60)  # BGR
+RED, BLUE, GOLD, GREEN = (50, 50, 225), (205, 120, 40), (40, 175, 235), (70, 170, 60)  # BGR (map layers)
+RED_BG, BLUE_BG, GOLD_BG = (225, 50, 50, 245), (40, 120, 205, 245), (235, 175, 40, 245)  # RGBA (label pills)
 KGD_CITY, MOSCOW, BALTIYSK = (20.51, 54.71), (37.62, 55.75), (19.92, 54.65)
 
 
@@ -55,8 +56,8 @@ def main():
         (0.0, 24.0, 53.5, 30),
         (s1[0] + 1.8, 21.2, 54.75, 9),        # zoom on the exclave
         (s2[0] + 0.1, 21.2, 54.75, 9),
-        (s2[0] + 1.1, 29.5, 54.9, 22),        # pull back: Poland, Lithuania, Moscow
-        (s3[0] + 0.1, 29.5, 54.9, 22),
+        (s2[0] + 1.1, 28.0, 54.6, 26),        # pull back: Poland, Lithuania, Moscow
+        (s3[0] + 0.1, 28.0, 54.6, 26),
         (s3[0] + 1.0, 21.2, 54.75, 8.5),      # back in: Königsberg
         (s4[0] + 0.1, 21.2, 54.75, 8.5),
         (s4[0] + 1.0, 25.5, 56.2, 17),        # Baltic Soviet republics
@@ -77,8 +78,8 @@ def main():
         ga.Label("POLAND", poland, s2[0] + 1.2, s3[0] + 0.3, size=40, offset=(0, 0)),
         ga.Label("LITHUANIA", lith, s2[0] + 1.5, s3[0] + 0.3, size=40, offset=(0, 0)),
         ga.Route([KGD_CITY, (25.0, 55.6), (31.0, 56.0), MOSCOW], s2[1] - 2.3, s3[0] + 0.3, draw_time=1.4),
-        ga.Label("MOSCOW", MOSCOW, s2[1] - 1.0, s3[0] + 0.3, size=40, offset=(0, -70),
-                 bg=(50, 50, 225, 240), fill=(255, 255, 255)),
+        ga.Label("MOSCOW", MOSCOW, s2[1] - 1.0, s3[0] + 0.3, size=40, offset=(-40, -70),
+                 bg=RED_BG, fill=(255, 255, 255)),
         ga.Label("~1,000 km", (30.0, 56.6), s2[1] - 1.2, s3[0] + 0.3, size=44, offset=(0, -40)),
     ]
     # 3: Königsberg -> Soviet
@@ -87,10 +88,10 @@ def main():
     els += [
         kg, k3,
         ga.Label("KÖNIGSBERG", kgd, s3[0] + 0.9, mid3 + 0.2, size=50, offset=(0, -280),
-                 bg=(40, 175, 235, 245), fill=(30, 30, 30)),
+                 bg=GOLD_BG, fill=(30, 30, 30)),
         ga.Label("GERMANY", kgd, s3[0] + 1.3, mid3 + 0.2, size=40, offset=(0, 260)),
         ga.Label("USSR", kgd, mid3 + 0.3, s4[0] + 0.8, size=56, offset=(0, -280),
-                 bg=(50, 50, 225, 245), fill=(255, 255, 255)),
+                 bg=RED_BG, fill=(255, 255, 255)),
         ga.Eyes(k3, mid3 + 0.4, s4[0] + 0.8, size=150, mood="smug"),
     ]
     # 4: the Soviet Baltic, all one country
@@ -99,7 +100,7 @@ def main():
               for i, sh in enumerate([lith, latvia, eston, belarus])]
     els += [k4] + soviet + [
         ga.Label("SOVIET UNION", (26.5, 57.6), s4[0] + 1.6, s5[0] + 1.0, size=52,
-                 bg=(50, 50, 225, 245), fill=(255, 255, 255)),
+                 bg=RED_BG, fill=(255, 255, 255)),
         ga.Sprite(a.hand, (23.8, 55.2), s4[1] - 2.2, s5[0] + 0.3, height=300, anchor=(0.74, 0.0)),
     ]
     # 5: 1991, Lithuania leaves, the exclave is stranded
@@ -107,9 +108,9 @@ def main():
         ga.Label("1991", (26.5, 57.6), s5[0] + 1.1, s6[0] + 0.3, size=64,
                  bg=(255, 255, 255, 240), fill=(30, 30, 30)),
         ga.Highlight(lith, walk, s6[0] + 0.3, color=GREEN),
-        ga.Label("LITHUANIA", lith, walk + 0.2, s6[0] + 0.3, size=40, offset=(0, 0)),
+        ga.Label("LITHUANIA", lith, walk + 0.2, s6[0] + 0.3, size=40, offset=(0, -110)),
         ga.Route([KGD_CITY, (23.5, 55.0), (26.5, 54.6), (28.0, 53.8)], walk + 0.4, s6[0] + 0.3, draw_time=1.0),
-        ga.XMark((24.2, 54.95), walk + 1.2, s6[0] + 0.3, size=120),
+        ga.XMark((26.0, 54.65), walk + 1.2, s6[0] + 0.3, size=120),
         ga.Eyes(k4, s5[0] + 0.3, s6[0] + 0.4, size=120, mood="shock", look=(28.0, 54.0)),
     ]
     # 6: surrounded by NATO, Baltic Fleet
@@ -119,12 +120,12 @@ def main():
         ga.Highlight(lith, s6[0] + 1.0, total, color=BLUE, style="glow"),
         k6,
         ga.Label("NATO", poland, s6[0] + 1.1, total, size=52, offset=(0, 0),
-                 bg=(205, 120, 40, 245), fill=(255, 255, 255)),
+                 bg=BLUE_BG, fill=(255, 255, 255)),
         ga.Label("NATO", lith, s6[0] + 1.3, total, size=52, offset=(0, 0),
-                 bg=(205, 120, 40, 245), fill=(255, 255, 255)),
+                 bg=BLUE_BG, fill=(255, 255, 255)),
         ga.Eyes(k6, s6[0] + 0.5, total, size=130, mood="angry", look=(23.0, 53.0)),
         ga.Label("BALTIC FLEET", BALTIYSK, s6[1] - 1.8, total, size=44, offset=(-30, -150),
-                 bg=(50, 50, 225, 245), fill=(255, 255, 255)),
+                 bg=RED_BG, fill=(255, 255, 255)),
         ga.Captions(caps, y=0.78, size=66),
     ]
 
